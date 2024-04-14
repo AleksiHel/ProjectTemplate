@@ -19,14 +19,23 @@ namespace Project.Controllers
                 return View(model);
             }
 
-            string testi = "661bccf4e2de7e7519ec782c";
 
-            var id = ObjectId.Parse(testi);
+          
+            var newSalt = Encryptor.createSalt();
+            var hashedPassword = Encryptor.HashPassword(model.Password, newSalt);
+
+            Console.WriteLine($"{Convert.ToHexString(newSalt)}");
+            Console.WriteLine(hashedPassword);
+
+
+
 
             var registerModel = new User
             {
                 Username = model.Username,
-                Password = model.Password
+                Password = hashedPassword,
+                Salt = newSalt
+
             };
 
             try

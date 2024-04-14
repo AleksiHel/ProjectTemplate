@@ -13,10 +13,11 @@ namespace Project.Models
         [Required(ErrorMessage = "Username needs to between 3 and 10 characters.")]
         [MinLength(3)]
         [MaxLength(10)]
-        public string Username { get; set; }
+        public string ?Username { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string ?Password { get; set; }
+        public byte[] ?Salt { get; set; }
     }
 }

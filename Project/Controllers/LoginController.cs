@@ -16,21 +16,18 @@ namespace Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(string name, string password)
+        public IActionResult Login(User model)
         {
 
 
-            bool testi = true; //DatabaseManipulator.CheckPassword(name, password);
+            bool testi = DatabaseManipulator.CheckPassword(model.Username, model.Password);
+
 
             if (testi)
             {
-                var claims = new List<Claim>
-            { new Claim(ClaimTypes.Name, name)
-            };
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username) };
 
-
-
-                if (name == "admin")
+                if (model.Username == "admin")
                 {
                     claims.Add(new Claim(ClaimTypes.Role, "admin"));
                 }

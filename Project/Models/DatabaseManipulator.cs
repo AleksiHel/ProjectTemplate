@@ -33,10 +33,9 @@ namespace Project.Models
         // Jos recordilla on _id päivittää
         // jos ei laittaa uuden tietokantaan
         // eli muista lähettää _id ettei tuu duplikaatteja
-        // HUOM! EI KÄYTETÄ jos ei saa päällekirjoittaa esim. rekisteröinnissä
-        // toiminta:
         //tarkistaa lähetetystä recordista onko _id tyhjä
-        // on = insert uus, ei = update vanha
+
+        // HUOM! EI KÄYTETÄ jos ei saa päällekirjoittaa esim. rekisteröinnissä
         //helppoa ja kivaa, dynaamista ja toimivaa
         public static T Save<T>(T record)
         {
@@ -49,19 +48,19 @@ namespace Project.Models
             {
                 try { mongotable.InsertOne(record); }
                 catch { Console.WriteLine("Error while saving"); }
-            } 
-            
+            }
+
             else if (IsObjectIdEmpty(idValue) == false)
             {
                 var filter = Builders<T>.Filter.Eq("_id", idValue);
                 try { mongotable.ReplaceOne(filter, record, new ReplaceOptions { IsUpsert = true }); }
                 catch { Console.WriteLine("Error while updating"); }
             }
-             return record;
+            return record;
         }
 
         // Käytä, jos ei saa päällekirjoittaa, esim rekisteröinti
-        public static T Register<T>(T record) 
+        public static T Register<T>(T record)
         {
             var mongotable = database.GetCollection<T>(typeof(T).Name);
 
@@ -82,6 +81,68 @@ namespace Project.Models
 
             return record;
         }
+
+        public static List<T> GetAll<T>(string table)
+        {
+            var mongotable = database.GetCollection<T>(table);
+            return mongotable.Find(new BsonDocument()).ToList();
+        }
+
+
+        public static List<T> GetItemById<T>(ObjectId ItemId, string table)
+        {
+            var mongotable = database.GetCollection<T>(table);
+            var filter = Builders<T>.Filter.Eq("_id", ItemId);
+            var testi = mongotable.Find(filter).ToList();
+            return testi;
+        }
+
+        public static List<T> GetAllById<T>(ObjectId UserId, string table)
+        {
+            var mongotable = database.GetCollection<T>(table);
+            var filter = Builders<T>.Filter.Eq("_id", UserId);
+            var testi = mongotable.Find(filter).ToList();
+            return testi;
+        }
+
+        public static ObjectId GetUsersID(string username)
+        {
+            var mongotable = database.GetCollection<User>("User");
+            var filter = Builders<User>.Filter.Eq("Username", username);
+            var user = mongotable.Find(filter).FirstOrDefault();
+
+            return user._id;
+        }
+
+        public static bool CheckPassword(string username, string password)
+        {
+
+                var mongoCollection = database.GetCollection<BsonDocument>("User");
+                var filter = Builders<BsonDocument>.Filter.Eq("Username", username);
+                var existingRecord = mongoCollection.Find(filter).FirstOrDefault();
+
+
+            if (existingRecord != null)
+            {
+                byte[] salt = existingRecord["Salt"].AsBsonBinaryData.Bytes;
+
+                string passwordHash = existingRecord["Password"].AsString;
+
+
+
+                Console.WriteLine($"Debug: Stored Hash: {passwordHash}");
+                Console.WriteLine($"Debug: Salt: {salt}");
+            
+
+                return Encryptor.VerifyPassword(password, passwordHash, salt);
+                }
+
+                else
+                {
+                    return false;
+                }   
+    }
+
 
         public static bool IsObjectIdEmpty(ObjectId objectid)
         {
