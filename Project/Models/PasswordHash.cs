@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Project.Models
 {
-    public class Encryptor
+    public class PasswordHash
     {
 
 

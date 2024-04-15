@@ -33,7 +33,6 @@ namespace Project.Models
         // Jos recordilla on _id päivittää
         // jos ei laittaa uuden tietokantaan
         // eli muista lähettää _id ettei tuu duplikaatteja
-        //tarkistaa lähetetystä recordista onko _id tyhjä
 
         // HUOM! EI KÄYTETÄ jos ei saa päällekirjoittaa esim. rekisteröinnissä
         //helppoa ja kivaa, dynaamista ja toimivaa
@@ -47,14 +46,14 @@ namespace Project.Models
             if (IsObjectIdEmpty(idValue) == true)
             {
                 try { mongotable.InsertOne(record); }
-                catch { Console.WriteLine("Error while saving"); }
+                catch { throw new Exception("Error while saving"); }
             }
 
             else if (IsObjectIdEmpty(idValue) == false)
             {
                 var filter = Builders<T>.Filter.Eq("_id", idValue);
                 try { mongotable.ReplaceOne(filter, record, new ReplaceOptions { IsUpsert = true }); }
-                catch { Console.WriteLine("Error while updating"); }
+                catch { throw new Exception("Error while updating"); }
             }
             return record;
         }
@@ -73,15 +72,33 @@ namespace Project.Models
             if (existingRecord == null)
             {
                 try { mongotable.InsertOne(record); }
-                catch { Console.WriteLine("Error while saving"); }
+                catch { throw new Exception("Error while saving"); }
             } else if (existingRecord != null)
             {
-                throw new Exception("Username already taken");
+                throw new Exception("Username already taken.");
             }
 
             return record;
         }
+        public static T Delete<T>(T record)
+        {
+            var mongotable = database.GetCollection<T>(typeof(T).Name);
+            PropertyInfo idProp = typeof(T).GetProperty("_id");
+            var idValue = (ObjectId)idProp.GetValue(record);
+            var filter = Builders<T>.Filter.Eq("_id", idValue);
 
+            try
+            {
+                mongotable.DeleteOne(filter);
+            }
+            catch
+            {
+                throw new Exception("Error while deleting");
+            }
+
+            return record;
+
+        }
         public static List<T> GetAll<T>(string table)
         {
             var mongotable = database.GetCollection<T>(table);
@@ -89,18 +106,18 @@ namespace Project.Models
         }
 
 
-        public static List<T> GetItemById<T>(ObjectId ItemId, string table)
+        public static T GetById<T>(ObjectId ItemId, string table)
         {
             var mongotable = database.GetCollection<T>(table);
             var filter = Builders<T>.Filter.Eq("_id", ItemId);
-            var testi = mongotable.Find(filter).ToList();
+            var testi = mongotable.Find(filter).FirstOrDefault();
             return testi;
         }
 
-        public static List<T> GetAllById<T>(ObjectId UserId, string table)
+        public static List<T> GetAllById<T>(ObjectId ItemId, string table)
         {
             var mongotable = database.GetCollection<T>(table);
-            var filter = Builders<T>.Filter.Eq("_id", UserId);
+            var filter = Builders<T>.Filter.Eq("_id", ItemId);
             var testi = mongotable.Find(filter).ToList();
             return testi;
         }
@@ -110,13 +127,11 @@ namespace Project.Models
             var mongotable = database.GetCollection<User>("User");
             var filter = Builders<User>.Filter.Eq("Username", username);
             var user = mongotable.Find(filter).FirstOrDefault();
-
             return user._id;
         }
 
         public static bool CheckPassword(string username, string password)
         {
-
                 var mongoCollection = database.GetCollection<BsonDocument>("User");
                 var filter = Builders<BsonDocument>.Filter.Eq("Username", username);
                 var existingRecord = mongoCollection.Find(filter).FirstOrDefault();
@@ -125,28 +140,18 @@ namespace Project.Models
             if (existingRecord != null)
             {
                 byte[] salt = existingRecord["Salt"].AsBsonBinaryData.Bytes;
-
                 string passwordHash = existingRecord["Password"].AsString;
-
-
-
-                Console.WriteLine($"Debug: Stored Hash: {passwordHash}");
-                Console.WriteLine($"Debug: Salt: {salt}");
-            
-
-                return Encryptor.VerifyPassword(password, passwordHash, salt);
-                }
-
-                else
-                {
-                    return false;
-                }   
+                return PasswordHash.VerifyPassword(password, passwordHash, salt);
+            }
+            else {return false;}   
     }
 
 
-        public static bool IsObjectIdEmpty(ObjectId objectid)
+         private static bool IsObjectIdEmpty(ObjectId objectid)
         {
             return objectid == ObjectId.Empty;
         }
+
+
     }
 }

@@ -10,14 +10,16 @@ namespace Project.Models
         public ObjectId _id { get; set; }
 
 
-        [Required(ErrorMessage = "Username needs to between 3 and 10 characters.")]
-        [MinLength(3)]
-        [MaxLength(10)]
-        public string ?Username { get; set; }
+        [Required(ErrorMessage = "Enter valid username")]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters long.")]
+        [MaxLength(10, ErrorMessage = "Username must be under 10 characters long")]
+        public string? Username { get; set; }
 
         [Required]
+        [MinLength(5, ErrorMessage = "Password must be at least 5 characters long.")]
+        [MaxLength(20, ErrorMessage = "Password must be less than 20 characters long.")]
         [DataType(DataType.Password)]
-        public string ?Password { get; set; }
+        public string? Password { get; set; }
         public byte[] ?Salt { get; set; }
     }
 }

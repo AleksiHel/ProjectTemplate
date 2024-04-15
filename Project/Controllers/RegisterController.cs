@@ -14,20 +14,15 @@ namespace Project.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(User model)
         {
+
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View( model);
             }
 
-
           
-            var newSalt = Encryptor.createSalt();
-            var hashedPassword = Encryptor.HashPassword(model.Password, newSalt);
-
-            Console.WriteLine($"{Convert.ToHexString(newSalt)}");
-            Console.WriteLine(hashedPassword);
-
-
+            var newSalt = PasswordHash.createSalt();
+            var hashedPassword = PasswordHash.HashPassword(model.Password, newSalt);
 
 
             var registerModel = new User
@@ -41,8 +36,9 @@ namespace Project.Controllers
             try
             { DatabaseManipulator.Register(registerModel); }
             catch (Exception e) {
-                Console.WriteLine(e);
-                return View(model); }
+               Console.WriteLine(e);
+               return View(model); 
+            }
             
 
             return RedirectToAction("Index", "Home");

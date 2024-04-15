@@ -18,12 +18,9 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(User model)
         {
+            bool isAuthenticated = DatabaseManipulator.CheckPassword(model.Username, model.Password);
 
-
-            bool testi = DatabaseManipulator.CheckPassword(model.Username, model.Password);
-
-
-            if (testi)
+            if (isAuthenticated)
             {
                 var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username) };
 
@@ -49,8 +46,10 @@ namespace Project.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-
-            return View("Index");
+            // Add error message to ModelState
+            ModelState.AddModelError("LoginError", "Invalid username or password.");
+            return View("Index", model);
         }
+
     }
 }
