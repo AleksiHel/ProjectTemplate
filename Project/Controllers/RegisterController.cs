@@ -17,17 +17,23 @@ namespace Project.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View( model);
+               return View( model);
             }
 
-          
+            if (DatabaseManipulator.CheckIfUsernameExist(model.Username))
+            {
+                ModelState.AddModelError("LoginError", "Username already exists");
+                return View(model);
+            }
+
+
             var newSalt = PasswordHash.createSalt();
             var hashedPassword = PasswordHash.HashPassword(model.Password, newSalt);
 
 
             var registerModel = new User
             {
-                Username = model.Username,
+                Username = model.Username.ToLower(),
                 Password = hashedPassword,
                 Salt = newSalt
 

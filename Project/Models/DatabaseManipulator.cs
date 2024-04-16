@@ -105,6 +105,13 @@ namespace Project.Models
             return mongotable.Find(new BsonDocument()).ToList();
         }
 
+        public static bool CheckIfUsernameExist(string username)
+        {
+            var mongotable = database.GetCollection<User>("User");
+            var filter = Builders<User>.Filter.Eq("Username", username);   
+            return mongotable.Find(filter).Any();
+        }
+
 
         public static T GetById<T>(ObjectId ItemId, string table)
         {

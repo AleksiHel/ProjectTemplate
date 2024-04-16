@@ -18,11 +18,11 @@ namespace Project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(User model)
         {
-            bool isAuthenticated = DatabaseManipulator.CheckPassword(model.Username, model.Password);
+            bool isAuthenticated = DatabaseManipulator.CheckPassword(model.Username.ToLower(), model.Password);
 
             if (isAuthenticated)
             {
-                var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username) };
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username.ToLower()) };
 
                 if (model.Username == "admin")
                 {
