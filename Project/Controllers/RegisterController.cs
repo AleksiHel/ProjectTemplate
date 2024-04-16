@@ -20,6 +20,8 @@ namespace Project.Controllers
                return View( model);
             }
 
+
+            // Pois ehkä, ei turvallinen, voi selvittää databasessa olevia käyttäjiä
             if (DatabaseManipulator.CheckIfUsernameExist(model.Username))
             {
                 ModelState.AddModelError("LoginError", "Username already exists");

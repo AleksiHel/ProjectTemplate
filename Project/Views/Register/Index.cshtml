@@ -11,13 +11,16 @@
             <label asp-for="Password" class="form-label">Password</label>
             <input asp-for="Password" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-dark p-1 mt-1 mb-2">Register</button>
+        <button type="submit" class="btn btn-dark p-2 mt-1 mb-2">Register</button>
     </form>
 
 
 
         @if (!ViewData.ModelState.IsValid)
     {
+
+        <div class="container-sm p-3 align-content-center" style="max-width: 300px;">
+
         <div class="alert alert-danger text-center">
             @foreach (var item in ViewData.ModelState.Values)
             {
@@ -27,6 +30,8 @@
                 }
             }
         </div>
-    }
+        </div>
 
+    }
+    
 </div>

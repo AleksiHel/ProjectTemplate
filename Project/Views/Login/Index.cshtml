@@ -15,16 +15,19 @@
             <label asp-for="Password" class="form-label">Password</label>
             <input asp-for="Password" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-dark p-1 mt-1 mb-2">Log in</button>
+        <button type="submit" class="btn btn-dark p-2 mt-1 mb-2">Log in</button>
     </form>
 
     @if (ViewData.ModelState.TryGetValue("LoginError", out var loginErrors) && loginErrors.Errors.Count > 0)
     {
+        <div class="container-sm p-3 align-content-center" style="max-width: 300px;">
+
         <div class="alert alert-danger text-center">
             @foreach (var error in loginErrors.Errors)
             {
                 <p>@error.ErrorMessage</p>
             }
+        </div>
         </div>
     }
 
