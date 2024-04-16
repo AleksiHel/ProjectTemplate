@@ -22,11 +22,11 @@ namespace Project.Controllers
 
 
             // Pois ehkä, ei turvallinen, voi selvittää databasessa olevia käyttäjiä
-            if (DatabaseManipulator.CheckIfUsernameExist(model.Username))
-            {
-                ModelState.AddModelError("LoginError", "Username already exists");
-                return View(model);
-            }
+            //if (DatabaseManipulator.CheckIfUsernameExist(model.Username))
+            //{
+            //    ModelState.AddModelError("LoginError", "Username already exists");
+            //    return View(model);
+            //}
 
 
             var newSalt = PasswordHash.createSalt();
@@ -37,7 +37,8 @@ namespace Project.Controllers
             {
                 Username = model.Username.ToLower(),
                 Password = hashedPassword,
-                Salt = newSalt
+                Salt = newSalt,
+                IsAdmin = false
 
             };
 

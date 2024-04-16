@@ -24,7 +24,7 @@ namespace Project.Controllers
             {
                 var claims = new List<Claim> { new Claim(ClaimTypes.Name, model.Username.ToLower()) };
 
-                if (model.Username == "admin")
+                if (model.IsAdmin == true)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, "admin"));
                 }

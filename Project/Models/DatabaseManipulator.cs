@@ -43,13 +43,13 @@ namespace Project.Models
             PropertyInfo idProp = typeof(T).GetProperty("_id");
             var idValue = (ObjectId)idProp.GetValue(record);
 
-            if (IsObjectIdEmpty(idValue) == true)
+            if (IsObjectIdEmpty(idValue))
             {
                 try { mongotable.InsertOne(record); }
                 catch { throw new Exception("Error while saving"); }
             }
 
-            else if (IsObjectIdEmpty(idValue) == false)
+            else if (!IsObjectIdEmpty(idValue))
             {
                 var filter = Builders<T>.Filter.Eq("_id", idValue);
                 try { mongotable.ReplaceOne(filter, record, new ReplaceOptions { IsUpsert = true }); }
@@ -74,9 +74,7 @@ namespace Project.Models
                 try { mongotable.InsertOne(record); }
                 catch { throw new Exception("Error while saving"); }
             } else if (existingRecord != null)
-            {
-                throw new Exception("Username already taken.");
-            }
+            {   throw new Exception("Username already taken."); }
 
             return record;
         }

@@ -16,10 +16,12 @@ namespace Project.Models
         public string? Username { get; set; }
 
         [Required]
-        [MinLength(5, ErrorMessage = "Password must be at least 5 characters long.")]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
         [MaxLength(20, ErrorMessage = "Password must be less than 20 characters long.")]
         [DataType(DataType.Password)]
         public string? Password { get; set; }
         public byte[] ?Salt { get; set; }
+
+        public bool? IsAdmin { get; set; }
     }
 }
