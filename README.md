@@ -5,7 +5,7 @@ This is my template for starting any .NET ASP CORE project.
 ## Features
 
 - MongoDB configured and connection.
-- DatabaseManipulator class configured for with some basic functionalities.
+- DatabaseManipulator class configured with some basic functionalities.
 - Log in configured with cookies.
 - Registering configured with usernames. 
 - Error messages for log in and register.
